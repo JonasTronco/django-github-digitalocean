@@ -3,8 +3,8 @@ name: Continuous Integration and Delivery
 on: [push]
 
 env:
-  WEB_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/web
-  NGINX_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/nginx
+  WEB_IMAGE: docker.pkg.github.com/jonastronco/test/web
+  NGINX_IMAGE: docker.pkg.github.com/jonastronco/test/nginx
 
 jobs:
 
@@ -44,17 +44,16 @@ jobs:
         run: |
           docker push ${{ env.WEB_IMAGE }}
           docker push ${{ env.NGINX_IMAGE }}
-
-  deploy:
-    name: Deploy to DigitalOcean
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: Checkout master
-        uses: actions/checkout@v1
-      - name: Add environment variables to .env
-        run: |
+ deploy:
+   name: Deploy to DigitalOcean
+   runs-on: ubuntu-latest
+   needs: build
+   if: github.ref == 'refs/heads/master'
+   steps:
+     - name: Checkout master
+       uses: actions/checkout@v1
+     - name: Add environment variables to .env
+       run: |
           echo DEBUG=0 >> .env
           echo SQL_ENGINE=django.db.backends.postgresql >> .env
           echo DATABASE=postgres >> .env
